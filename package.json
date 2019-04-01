@@ -16,6 +16,8 @@
   "scripts": {
     "test": "",
     "start": "",
-    "build": "webpack"
+    "build": "./node_modules/.bin/webpack",
+    "build:prod": "./node_modules/.bin/webpack -p",
+    "watch": "./node_modules/.bin/webpack --watch"
   }
 }

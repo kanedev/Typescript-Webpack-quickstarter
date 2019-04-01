@@ -1,15 +1,16 @@
 const path = require('path');
 module.exports = {
   mode: 'development',
+  context:path.resolve(__dirname,'src'),
   entry: path.join(__dirname, 'src', 'index'),
   //watch: true,
 
-  // output: {
-  //   path: __dirname + 'dist',
-  //   publicPath: '/dist/',
-  //   filename: "bundle.js",
-  //   chunkFilename: '[name].js'
-  // },
+  output: {
+    path: __dirname + 'dist',
+    publicPath: '/dist/',
+    filename: "bundle.js",
+    chunkFilename: '[name].js'
+  },
 
 
   // module: {
