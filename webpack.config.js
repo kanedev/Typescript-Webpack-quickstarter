@@ -1,11 +1,20 @@
 const path = require('path');
+const webpack = require('webpack');
+
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const extractPlugin = new ExtractTextPlugin ({filename:'./assets/css/app.css'});
+
 
 module.exports = {
-  mode: 'development',
+ mode: 'development',
   context:path.resolve(__dirname,'src'),
-  entry: path.join(__dirname, 'src', 'index'),
+  entry: //path.join(__dirname, 'src', 'index'),
+  {
+    app: './index.js'
+  },
   //watch: true,
   output: {
     path: path.resolve(__dirname,'dist') ,
@@ -24,7 +33,9 @@ module.exports = {
 
   module: {
     noParse: /jquery|lodash/,
-    rules: [{
+    rules: [
+  //babel-loader    
+      {
       test: /\.js?x$/,
       include: [
         path.resolve(__dirname, 'src')
@@ -42,13 +53,44 @@ module.exports = {
           }]
         ]
       }
-    }]
+    },
+  //html-loader
+  {
+    test:/\.html$/,
+    use:['html-loader']},
+  //Css-loader & Sass-loader
+  {
+    test: /\.scss$/,
+    include: [path.resolve(__dirname, 'src', 'assets', 'scss')],
+    use: extractPlugin.extract({
+      use: [
+        {
+          loader: 'css-loader',
+          options: {
+            sourceMap: true
+          }
+        },
+        {
+          loader: 'sass-loader',
+          options: {
+            sourceMap: true
+          }
+        }
+      ],
+      fallback: 'style-loader'
+    })
+  }
+  ,
+
+  
+  ]
   },
 plugins: [
   new CleanWebpackPlugin(),
   new HtmlWebpackPlugin({
     template: 'index.html'
-  })
+  }),
+  extractPlugin
 ]
 
   // resolve: {
