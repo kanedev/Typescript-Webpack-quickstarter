@@ -13,12 +13,13 @@ module.exports = {
   context:path.resolve(__dirname,'src'),
   entry: //path.join(__dirname, 'src', 'index'),
   {
-    app: './index.js'
+    app: './index.ts'
   },
   //watch: true,
   output: {
     path: path.resolve(__dirname,'dist') ,
     filename: "bundle.js",
+    pathinfo: false,
   },
   devServer: {
     contentBase: path.resolve(__dirname,'./dist'),
@@ -35,29 +36,30 @@ module.exports = {
     noParse: /jquery|lodash/,
     rules: [
   //babel-loader    
-      {
-      test: /\.js?x$/,
-      include: [
-        path.resolve(__dirname, 'src')
-      ],
-    exclude: [
-        path.resolve(__dirname, 'node_modules')
-      ],
-    loader: 'babel-loader',
-    query: {
-        presets: [
-          ["@babel/env", {
-            "targets": {
-              "browsers": "last 2 chrome versions"
-            }
-          }]
-        ]
-      }
-    },
+    //   {
+    //   test: /\.js?x$/,
+    //   include: [
+    //     path.resolve(__dirname, 'src')
+    //   ],
+    // exclude: [
+    //     path.resolve(__dirname, 'node_modules')
+    //   ],
+    // loader: 'babel-loader',
+    // query: {
+    //     presets: [
+    //       ["@babel/env", {
+    //         "targets": {
+    //           "browsers": "last 2 chrome versions"
+    //         }
+    //       }]
+    //     ]
+    //   }
+    // },
   //html-loader
   {
     test:/\.html$/,
-    use:['html-loader']},
+    use:['html-loader']
+  },
   //Css-loader & Sass-loader
   {
     test: /\.scss$/,
@@ -82,9 +84,25 @@ module.exports = {
   }
   ,
 
+  // ts-loader
+  {
+    test: /\.ts$/,
+    include: [
+      path.resolve(__dirname, 'src')
+    ],
+  exclude: [
+      path.resolve(__dirname, 'node_modules')
+    ],
+    use: 'awesome-typescript-loader'
+  },
   
   ]
   },
+
+  resolve: {
+    extensions: ['.ts','.js']
+ },
+
 plugins: [
   new CleanWebpackPlugin(),
   new HtmlWebpackPlugin({
@@ -92,10 +110,10 @@ plugins: [
   }),
   extractPlugin
 ]
-
-  // resolve: {
-  //   extensions: ['.json', '.js', '.jsx']
-  // },
+,
+//  resolve: {
+//      extensions: ['.json','.ts', '.tsx', '.js', '.jsx']
+//   },
 
 
 
