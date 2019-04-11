@@ -15,12 +15,12 @@ module.exports = {
   context:path.resolve(__dirname,'src'),
   entry: //path.join(__dirname, 'src', 'index'),
   {
-    app: './index.ts'
+    app: './js/index.ts'
   },
   //watch: true,
   output: {
     path: path.resolve(__dirname,'dist') ,
-    filename: "bundle.js",
+    filename: "./js/bundle.js",
     pathinfo: false,
   },
   devServer: {
@@ -107,29 +107,47 @@ module.exports = {
   // ts-loader
   {
     test: /\.ts$/,
-    include: [
-      path.resolve(__dirname, 'src')
-    ],
-  exclude: [  path.resolve(__dirname, 'node_modules') ],
-    use: 'awesome-typescript-loader'
+    include: [   path.resolve(__dirname, 'src','js')],
+    exclude: [  path.resolve(__dirname, 'node_modules') ],
+    use: 'awesome-typescript-loader' 
+  
   },
 
 
   // file-loader for images
+  // {
+  //   test: /\.(jpg|png|gif|svg)$/,
+  //   exclude: [  path.resolve(__dirname, 'node_modules') ],
+  //   use: [
+  //     {
+  //       loader: 'file-loader',
+  //       options: {
+  //         name: '[name].[ext]',
+  //         outputPath: './assets/media/',
+  //         publicPath: './assets/media/'
+  //       }
+  //     }
+  //   ]
+  // },
+
+  // file-loader for images
   {
-    test: /\.(jpg|png|gif|svg)$/,
-    exclude: [  path.resolve(__dirname, 'node_modules') ],
+    test: /\.(gif|png|jpe?g|svg)$/i,
     use: [
-      {
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]',
-          outputPath: './assets/media/',
-          publicPath: './assets/media/'
-        }
-      }
-    ]
+   {loader: 'file-loader',
+   options : {
+    name: '[name].[ext]',
+    outputPath: './assets/media/',
+    publicPath: './assets/media/'
   },
+  },
+   { loader: 'image-webpack-loader', },
+
+    ],
+   },
+
+
+
 
   // file-loader (for fonts)
   {
@@ -137,25 +155,14 @@ module.exports = {
     use: [{
       loader: 'file-loader',
       options: {
-         name: 'fonts/[name].[ext]',
-         // name: '[name].[ext]',
+         name: 'fonts/[name].[hash].[ext]',
           outputPath: '/assets/',
           publicPath: '../',
-          //outputPath: 'css/'
       }
   }],
   exclude: [  path.resolve(__dirname, 'node_modules') ],
- 
-   // options: {
-   //   name: "./assets/scss/fonts/[name].[ext]",
-     // outputPath: './assets/scss/fonts/',
-     // publicPath: './assets/scss/fonts/'
-  //  },
   }
-
- 
-
-  ]
+ ]
   },
 
 
@@ -163,11 +170,15 @@ module.exports = {
 plugins: [
   new CleanWebpackPlugin(),
   new HtmlWebpackPlugin({
-    template: 'index.html'
+   // inject: false,
+    //hash: true,
+    template: 'index.html',
+    filename: 'index.html'
   }),
   new MiniCssExtractPlugin({
 	  filename: "assets/css/[name].css",
-	  chunkFilename: "[id].css"
+  //  filename: "main.[contenthash].css",
+    chunkFilename: "[id].css"
 	}),
 ]
 ,

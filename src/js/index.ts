@@ -1,4 +1,4 @@
-import './assets/scss/app.scss';
+import '../assets/scss/app.scss';
 
 console.log('====================================');
 console.log('Its working fine !!!');
