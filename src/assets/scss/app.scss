@@ -1,4 +1,24 @@
 @import '_colors';
+
+.myclass{
+ font-family: "alien";
+}
+
+@font-face {
+    font-family: "alien";
+    src: url('../fonts/aliendude.ttf') format("truetype") ;
+       // ,url('../fonts/aliendude.ttf') format("truetype");
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  $font-stack: Helvetica, sans-serif;
+$primary-color: blue;
+
 body {
-    background:$bgcolor;
+  font: 100% $font-stack;
+  color: $primary-color;
+  &:fullscreen {
+	background-color: pink; // propriété CSS peu supportée par les navigateurs qui devrait être auto-préfixée en mode production
+  }
 }

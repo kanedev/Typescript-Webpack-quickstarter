@@ -3,13 +3,15 @@ const webpack = require('webpack');
 
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+//const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-const extractPlugin = new ExtractTextPlugin ({filename:'./assets/css/app.css'});
+//const extractPlugin = new ExtractTextPlugin ({filename:'./assets/css/app.css'});
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
+const env = process.env.NODE_ENV;
 
 module.exports = {
- mode: 'development',
+ mode: env  || 'development',
   context:path.resolve(__dirname,'src'),
   entry: //path.join(__dirname, 'src', 'index'),
   {
@@ -58,29 +60,47 @@ module.exports = {
   //html-loader
   {
     test:/\.html$/,
-    use:['html-loader']
+    use:['html-loader'],
+    exclude: [  path.resolve(__dirname, 'node_modules') ],
   },
   //Css-loader & Sass-loader
   {
-    test: /\.scss$/,
+    test: /\.sc|ass$/,
     include: [path.resolve(__dirname, 'src', 'assets', 'scss')],
-    use: extractPlugin.extract({
-      use: [
-        {
-          loader: 'css-loader',
-          options: {
-            sourceMap: true
-          }
-        },
-        {
-          loader: 'sass-loader',
-          options: {
-            sourceMap: true
+    exclude: [  path.resolve(__dirname, 'node_modules') ],
+		use: [
+      { loader: MiniCssExtractPlugin.loader },
+      { 
+        loader: "css-loader",
+        options: {
+      //    minimize: true,
+          sourceMap: true,
+          importLoaders: 1
+        }
+      },          
+      {
+        loader: 'postcss-loader',
+        options: {
+        sourceMap: true,
+        config: {
+          ctx: {
+          cssnano: {},
+          autoprefixer: {}
           }
         }
-      ],
-      fallback: 'style-loader'
-    })
+        }
+      },
+      {
+        loader: 'resolve-url-loader' // améliore la résolution des chemins relatifs 
+        // (utile par exemple quand une librairie tierce fait référence à des images ou des fonts situés dans son propre dossier)
+      },
+      { 
+        loader: "sass-loader",
+        options: {
+          sourceMap: true // il est indispensable d'activer les sourcemaps pour que postcss fonctionne correctement
+        }
+      }
+      ]
   }
   ,
 
@@ -90,27 +110,71 @@ module.exports = {
     include: [
       path.resolve(__dirname, 'src')
     ],
-  exclude: [
-      path.resolve(__dirname, 'node_modules')
-    ],
+  exclude: [  path.resolve(__dirname, 'node_modules') ],
     use: 'awesome-typescript-loader'
   },
-  
+
+
+  // file-loader for images
+  {
+    test: /\.(jpg|png|gif|svg)$/,
+    exclude: [  path.resolve(__dirname, 'node_modules') ],
+    use: [
+      {
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]',
+          outputPath: './assets/media/',
+          publicPath: './assets/media/'
+        }
+      }
+    ]
+  },
+
+  // file-loader (for fonts)
+  {
+    test: /\.(woff|woff2|eot|ttf|otf)$/,
+    use: [{
+      loader: 'file-loader',
+      options: {
+         name: 'fonts/[name].[ext]',
+         // name: '[name].[ext]',
+          outputPath: '/assets/',
+          publicPath: '../',
+          //outputPath: 'css/'
+      }
+  }],
+  exclude: [  path.resolve(__dirname, 'node_modules') ],
+ 
+   // options: {
+   //   name: "./assets/scss/fonts/[name].[ext]",
+     // outputPath: './assets/scss/fonts/',
+     // publicPath: './assets/scss/fonts/'
+  //  },
+  }
+
+ 
+
   ]
   },
 
-  resolve: {
-    extensions: ['.ts','.js']
- },
+
 
 plugins: [
   new CleanWebpackPlugin(),
   new HtmlWebpackPlugin({
     template: 'index.html'
   }),
-  extractPlugin
+  new MiniCssExtractPlugin({
+	  filename: "assets/css/[name].css",
+	  chunkFilename: "[id].css"
+	}),
 ]
 ,
+
+resolve: {
+  extensions: ['.ts','.js']
+},
 //  resolve: {
 //      extensions: ['.json','.ts', '.tsx', '.js', '.jsx']
 //   },
