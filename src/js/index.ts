@@ -1,11 +1,10 @@
 import '../assets/scss/app.scss';
-
-console.log('====================================');
-console.log('Its working fine !!!');
-console.log('====================================');
-
-console.log('hi');
 import {Car} from './Car'
+import _ from 'lodash'
+
+console.log(
+  _.join(['Another', 'test : ', 'loadash + cache + spliting code !'], ' ')
+);
 
 
 const car:Car = new Car();

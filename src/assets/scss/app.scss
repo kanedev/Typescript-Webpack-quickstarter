@@ -1,4 +1,7 @@
 @import '_colors';
+@import '~font-awesome/css/font-awesome.css';
+ 
+
 
 .myclass{
  font-family: "alien";
@@ -7,18 +10,21 @@
 @font-face {
     font-family: "alien";
     src: url('../fonts/aliendude.ttf') format("truetype") ;
-       // ,url('../fonts/aliendude.ttf') format("truetype");
+
     font-weight: 600;
     font-style: normal;
   }
 
   $font-stack: Helvetica, sans-serif;
-$primary-color: blue;
+$primary-color: rgb(255, 255, 255);
 
 body {
   font: 100% $font-stack;
   color: $primary-color;
+  background-color: $bgcolor;
   &:fullscreen {
-	background-color: pink; // propriété CSS peu supportée par les navigateurs qui devrait être auto-préfixée en mode production
+	background-color: $bgcolor; // propriété CSS peu supportée par les navigateurs qui devrait être auto-préfixée en mode production
   }
 }
+
+ 

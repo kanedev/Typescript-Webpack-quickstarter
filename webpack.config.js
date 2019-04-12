@@ -15,14 +15,29 @@ module.exports = {
   context:path.resolve(__dirname,'src'),
   entry: //path.join(__dirname, 'src', 'index'),
   {
-    app: './js/index.ts'
+    app: './js/index.ts',
+    another: './js/another-module.ts'
   },
   //watch: true,
   output: {
     path: path.resolve(__dirname,'dist') ,
-    filename: "./js/bundle.js",
+    filename: "./js/[name].[contenthash].js",
     pathinfo: false,
   },
+     optimization: {
+ runtimeChunk: 'single',
+     splitChunks: {
+       cacheGroups: {
+         vendor: {
+           test: /[\\/]node_modules[\\/]/,
+           name: 'vendors',
+           chunks: 'all'
+         }
+       }
+     }
+       }
+    ,
+
   devServer: {
     contentBase: path.resolve(__dirname,'./dist'),
    // inline: true,
@@ -112,24 +127,7 @@ module.exports = {
     use: 'awesome-typescript-loader' 
   
   },
-
-
-  // file-loader for images
-  // {
-  //   test: /\.(jpg|png|gif|svg)$/,
-  //   exclude: [  path.resolve(__dirname, 'node_modules') ],
-  //   use: [
-  //     {
-  //       loader: 'file-loader',
-  //       options: {
-  //         name: '[name].[ext]',
-  //         outputPath: './assets/media/',
-  //         publicPath: './assets/media/'
-  //       }
-  //     }
-  //   ]
-  // },
-
+ 
   // file-loader for images
   {
     test: /\.(gif|png|jpe?g|svg)$/i,
@@ -151,7 +149,7 @@ module.exports = {
 
   // file-loader (for fonts)
   {
-    test: /\.(woff|woff2|eot|ttf|otf)$/,
+    test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
     use: [{
       loader: 'file-loader',
       options: {
@@ -160,7 +158,7 @@ module.exports = {
           publicPath: '../',
       }
   }],
-  exclude: [  path.resolve(__dirname, 'node_modules') ],
+ // exclude: [  path.resolve(__dirname, 'node_modules') ],
   }
  ]
   },
@@ -175,10 +173,11 @@ plugins: [
     template: 'index.html',
     filename: 'index.html'
   }),
+  new webpack.HashedModuleIdsPlugin(),
   new MiniCssExtractPlugin({
-	  filename: "assets/css/[name].css",
+	  filename: "assets/css/[name].[contenthash].css",
   //  filename: "main.[contenthash].css",
-    chunkFilename: "[id].css"
+  //  chunkFilename: "[id].css"
 	}),
 ]
 ,

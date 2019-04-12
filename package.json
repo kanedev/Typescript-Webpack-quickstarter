@@ -19,6 +19,7 @@
     "html-webpack-plugin": "^3.2.0",
     "image-webpack-loader": "^4.6.0",
     "imagemin": "^6.1.0",
+    "lodash": "^4.17.11",
     "mini-css-extract-plugin": "^0.6.0",
     "node-sass": "^4.11.0",
     "path": "^0.12.7",
@@ -39,5 +40,9 @@
     "build:prod": "./node_modules/.bin/webpack -p",
     "watch": "./node_modules/.bin/webpack --watch",
     "dev": "./node_modules/.bin/webpack-dev-server"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.123",
+    "font-awesome": "^4.7.0"
   }
 }
