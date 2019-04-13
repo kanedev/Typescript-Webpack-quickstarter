@@ -3,10 +3,9 @@ const webpack = require('webpack');
 
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-//const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-//const extractPlugin = new ExtractTextPlugin ({filename:'./assets/css/app.css'});
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const TerserJSPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const env = process.env.NODE_ENV;
 
@@ -21,25 +20,38 @@ module.exports = {
   //watch: true,
   output: {
     path: path.resolve(__dirname,'dist') ,
-    filename: "./js/[name].[contenthash].js",
+    //filename: "./js/[name].[contenthash].js",
+    filename: env === 'development' ? './js/[name].[contenthash].js' : './js/[name].[hash].js',
     pathinfo: false,
   },
      optimization: {
+       
  runtimeChunk: 'single',
      splitChunks: {
        cacheGroups: {
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true,
+        },
          vendor: {
            test: /[\\/]node_modules[\\/]/,
            name: 'vendors',
            chunks: 'all'
          }
        }
-     }
+     },
+
+     minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+
+
        }
     ,
 
   devServer: {
     contentBase: path.resolve(__dirname,'./dist'),
+    hot: true,
    // inline: true,
    // host: '0.0.0.0',
     port: 1111,
@@ -84,11 +96,17 @@ module.exports = {
     include: [path.resolve(__dirname, 'src', 'assets', 'scss')],
     exclude: [  path.resolve(__dirname, 'node_modules') ],
 		use: [
-      { loader: MiniCssExtractPlugin.loader },
+      { loader: MiniCssExtractPlugin.loader ,
+        options: {
+         // only enable hot in development
+         hmr: process.env.NODE_ENV === 'development',
+         // if hmr does not work, this is a forceful method.
+         reloadAll: true,
+        }
+      },
       { 
         loader: "css-loader",
         options: {
-      //    minimize: true,
           sourceMap: true,
           importLoaders: 1
         }
@@ -131,10 +149,13 @@ module.exports = {
   // file-loader for images
   {
     test: /\.(gif|png|jpe?g|svg)$/i,
+    include: [path.resolve(__dirname, 'src', 'assets', 'media')],
+    exclude: [  path.resolve(__dirname, 'node_modules') ],
     use: [
    {loader: 'file-loader',
    options : {
-    name: '[name].[ext]',
+   // name: '[name].[ext]',
+    name: env === 'development' ? '[name].[contenthash].[ext]' : '[name].[hash].[ext]',
     outputPath: './assets/media/',
     publicPath: './assets/media/'
   },
@@ -145,15 +166,14 @@ module.exports = {
    },
 
 
-
-
   // file-loader (for fonts)
   {
     test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+  
     use: [{
       loader: 'file-loader',
       options: {
-         name: 'fonts/[name].[hash].[ext]',
+         name: env === 'development' ? 'fonts/[name].[contenthash].[ext]' : 'fonts/[name].[hash].[ext]',
           outputPath: '/assets/',
           publicPath: '../',
       }
@@ -174,8 +194,10 @@ plugins: [
     filename: 'index.html'
   }),
   new webpack.HashedModuleIdsPlugin(),
+  new webpack.HotModuleReplacementPlugin(),
   new MiniCssExtractPlugin({
-	  filename: "assets/css/[name].[contenthash].css",
+   // filename: "assets/css/[name].[contenthash].css",
+    filename: env === 'development' ? 'assets/css/[name].[contenthash].css' : 'assets/css/[name].[hash].css',
   //  filename: "main.[contenthash].css",
   //  chunkFilename: "[id].css"
 	}),
