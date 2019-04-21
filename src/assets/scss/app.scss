@@ -16,7 +16,7 @@
   }
 
   $font-stack: Helvetica, sans-serif;
-$primary-color: rgb(79, 231, 173);
+$primary-color: #3aec93;
 
 body {
   font: 100% $font-stack;
@@ -27,4 +27,8 @@ body {
   }
 }
 
- 
+#img {
+  background-image: url('../media/man.jpg') ;
+  width:500px;
+  height:400px;
+} 

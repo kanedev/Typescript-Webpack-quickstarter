@@ -19,10 +19,11 @@ module.exports = {
   },
   //watch: true,
   output: {
+   // publicPath: 'assets/',
     path: path.resolve(__dirname,'dist') ,
     //filename: "./js/[name].[contenthash].js",
-    filename: env === 'development' ? './js/[name].[contenthash].js' : './js/[name].[hash].js',
-    pathinfo: false,
+    filename: env === 'development' ? './js/[name].[hash].js' : './js/[name].[contenthash].js',
+   // pathinfo: false,
   },
      optimization: {
        
@@ -92,12 +93,16 @@ module.exports = {
   },
   //Css-loader & Sass-loader
   {
-    test: /\.sc|ass$/,
+    test: /\.(sa|sc|c)ss$/,
     include: [path.resolve(__dirname, 'src', 'assets', 'scss')],
     exclude: [  path.resolve(__dirname, 'node_modules') ],
 		use: [
       { loader: MiniCssExtractPlugin.loader ,
         options: {
+          outputPath: './assets/media/',
+          publicPath: '../../',
+          // publicPath: '../assets/',
+         /// outputPath: './assets/css/',
          // only enable hot in development
          hmr: process.env.NODE_ENV === 'development',
          // if hmr does not work, this is a forceful method.
@@ -155,9 +160,8 @@ module.exports = {
    {loader: 'file-loader',
    options : {
    // name: '[name].[ext]',
-    name: env === 'development' ? '[name].[contenthash].[ext]' : '[name].[hash].[ext]',
-    outputPath: './assets/media/',
-    publicPath: './assets/media/'
+    name: env === 'development' ? '[name].[contenthash].[ext]' : 'assets/media/[name].[hash].[ext]',
+
   },
   },
    { loader: 'image-webpack-loader', },
@@ -173,9 +177,7 @@ module.exports = {
     use: [{
       loader: 'file-loader',
       options: {
-         name: env === 'development' ? 'fonts/[name].[contenthash].[ext]' : 'fonts/[name].[hash].[ext]',
-          outputPath: '/assets/',
-          publicPath: '../',
+         name: env === 'development' ? '[name].[hash].[ext]' : 'assets/fonts/[name].[contenthash].[ext]',
       }
   }],
  // exclude: [  path.resolve(__dirname, 'node_modules') ],
@@ -194,12 +196,12 @@ plugins: [
     filename: 'index.html'
   }),
   new webpack.HashedModuleIdsPlugin(),
-  new webpack.HotModuleReplacementPlugin(),
+  //env === 'development' ? 'new webpack.HotModuleReplacementPlugin(),' : '',
+  //new webpack.HotModuleReplacementPlugin(),
   new MiniCssExtractPlugin({
    // filename: "assets/css/[name].[contenthash].css",
-    filename: env === 'development' ? 'assets/css/[name].[contenthash].css' : 'assets/css/[name].[hash].css',
-  //  filename: "main.[contenthash].css",
-  //  chunkFilename: "[id].css"
+    filename: env === 'development' ? '[name].[hash].css' : './assets/css/[name].[contenthash].css',
+
 	}),
 ]
 ,

@@ -41,7 +41,7 @@
     "build": "NODE_ENV=production ./node_modules/.bin/webpack",
     "build:prod": "./node_modules/.bin/webpack -p",
     "watch": "./node_modules/.bin/webpack --watch",
-    "dev": "./node_modules/.bin/webpack-dev-server"
+    "dev": "NODE_ENV=development ./node_modules/.bin/webpack-dev-server"
   },
   "dependencies": {
     "@types/lodash": "^4.14.123",
