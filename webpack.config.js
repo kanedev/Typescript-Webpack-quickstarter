@@ -6,8 +6,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const DashboardPlugin = require("webpack-dashboard/plugin");
+const PurgecssPlugin = require('purgecss-webpack-plugin')
 
 const env = process.env.NODE_ENV;
+
+const glob = require('glob')
+const PATHS = {
+  src: path.join(__dirname, 'src')
+}
+
+
 
 module.exports = {
  mode: env  || 'development',
@@ -51,12 +60,13 @@ module.exports = {
     ,
 
   devServer: {
-    contentBase: path.resolve(__dirname,'./dist'),
+    contentBase: path.resolve(__dirname,'src'),
     hot: true,
    // inline: true,
    // host: '0.0.0.0',
     port: 1111,
-    stats: 'errors-only',
+    //stats: 'errors-only',
+    overlay:true,
     open: true,
     compress: true
   },
@@ -97,6 +107,7 @@ module.exports = {
     include: [path.resolve(__dirname, 'src', 'assets', 'scss')],
     exclude: [  path.resolve(__dirname, 'node_modules') ],
 		use: [
+   //   'css-hot-loader',
       { loader: MiniCssExtractPlugin.loader ,
         options: {
           outputPath: './assets/media/',
@@ -188,6 +199,10 @@ module.exports = {
 
 
 plugins: [
+  new PurgecssPlugin({
+    paths: glob.sync(`${PATHS.src}/**/*`,  { nodir: true }),
+  }),
+  new DashboardPlugin(),
   new CleanWebpackPlugin(),
   new HtmlWebpackPlugin({
    // inject: false,

@@ -16,7 +16,7 @@
   }
 
   $font-stack: Helvetica, sans-serif;
-$primary-color: #3aec93;
+$primary-color: #1dbe4d;
 
 body {
   font: 100% $font-stack;
@@ -32,3 +32,8 @@ body {
   width:500px;
   height:400px;
 } 
+
+.coco {
+
+  color: $primary-color;
+}

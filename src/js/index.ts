@@ -3,7 +3,7 @@ import {Car} from './Car'
 import _ from 'lodash'
 
 console.log(
-  _.join(['Another', 'test : ', 'loadash + cache + spliting code !'], ' ')
+  _.join(['Another', 'test 2  : ', 'loadash + cache + spliting code !'], ' ')
 );
 
 
