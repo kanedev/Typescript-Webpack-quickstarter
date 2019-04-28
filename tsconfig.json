@@ -3,11 +3,13 @@
       "outDir": "./dist/",
       "sourceMap":true,
       "noImplicitAny": true,
-      "module": "es6",
+      "module": "esnext",
+      "lib": ["es5", "es6","dom"] ,
       "target": "es5",
       "jsx": "react",
       "allowJs": true,
       "esModuleInterop": true,
+      "moduleResolution": "node"
       // "typeRoots": [
       //   "./node_modules/@types",
       //   "./node_modules"

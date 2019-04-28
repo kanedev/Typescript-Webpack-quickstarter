@@ -21,19 +21,20 @@ const PATHS = {
 module.exports = {
  mode: env  || 'development',
   context:path.resolve(__dirname,'src'),
-  entry: //path.join(__dirname, 'src', 'index'),
+  entry: 
   {
     app: './js/index.ts',
+    main: './js/main.ts',
     another: './js/another-module.ts'
   },
-  //watch: true,
   output: {
-   // publicPath: 'assets/',
     path: path.resolve(__dirname,'dist') ,
-    //filename: "./js/[name].[contenthash].js",
-    filename: env === 'development' ? './js/[name].[hash].js' : './js/[name].[contenthash].js',
-   // pathinfo: false,
+    filename: env === 'development' ? './js/[name].bundle.[hash].js' : './js/[name].[contenthash].js',
+    chunkFilename: env === 'development' ? './js/[name].bundle.[hash].js' : './js/[name].[contenthash].js',
+    // pathinfo: false,
   },
+
+
      optimization: {
        
  runtimeChunk: 'single',
@@ -46,9 +47,12 @@ module.exports = {
           enforce: true,
         },
          vendor: {
+          maxInitialRequests: Infinity,
+          minSize: 0,
            test: /[\\/]node_modules[\\/]/,
-           name: 'vendors',
-           chunks: 'all'
+         //  name: 'vendors',
+           chunks: 'all',
+           
          }
        }
      },
@@ -73,11 +77,11 @@ module.exports = {
   devtool: 'inline-source-map',
 
   module: {
-    noParse: /jquery|lodash/,
+   // noParse: /jquery|lodash/,
     rules: [
   //babel-loader    
     //   {
-    //   test: /\.js?x$/,
+    //   test: /\.js$/,
     //   include: [
     //     path.resolve(__dirname, 'src')
     //   ],
