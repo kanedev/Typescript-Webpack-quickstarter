@@ -19,7 +19,7 @@ const PATHS = {
 
 
 module.exports = {
-  mode: env || 'development',
+  mode: env ,
   context: path.resolve(__dirname, 'src'),
   entry:
   {
@@ -29,14 +29,16 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: env === 'development' ? './js/[name].bundle.[hash].js' : './js/[name].[contenthash].js',
-    chunkFilename: env === 'development' ? './js/[name].bundle.[hash].js' : './js/[name].[contenthash].js',
+    filename: env === 'development' ? './js/[name].bundle.[hash].js' : './js/[name].[hash].js',
+    chunkFilename: env === 'development' ? './js/[name].bundle.[hash].js' : './js/[name].[hash].js',
      pathinfo: false,
   },
 
 
   optimization: {
-
+    minimize:true,
+    usedExports: true,
+  
     runtimeChunk: 'single',
     splitChunks: {
       cacheGroups: {
@@ -176,7 +178,7 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              name: env === 'development' ? '[name].[contenthash].[ext]' : 'assets/media/[name].[hash].[ext]',
+              name: env === 'development' ? '[name].[hash].[ext]' : 'assets/media/[name].[hash].[ext]',
             },
           },
           { loader: 'image-webpack-loader',
@@ -215,7 +217,7 @@ module.exports = {
         use: [{
           loader: 'file-loader',
           options: {
-            name: env === 'development' ? '[name].[hash].[ext]' : 'assets/fonts/[name].[contenthash].[ext]',
+            name: env === 'development' ? '[name].[hash].[ext]' : 'assets/fonts/[name].[hash].[ext]',
           }
         }],
         // exclude: [  path.resolve(__dirname, 'node_modules') ],
@@ -240,10 +242,10 @@ module.exports = {
     }),
     new webpack.HashedModuleIdsPlugin(),
     //env === 'development' ? 'new webpack.HotModuleReplacementPlugin(),' : '',
-    //new webpack.HotModuleReplacementPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
     new MiniCssExtractPlugin({
-      // filename: "assets/css/[name].[contenthash].css",
-      filename: env === 'development' ? '[name].[hash].css' : './assets/css/[name].[contenthash].css',
+      // filename: "assets/css/[name].[hash].css",
+      filename: env === 'development' ? '[name].[hash].css' : './assets/css/[name].[hash].css',
 
     }),
   ]

@@ -45,7 +45,7 @@
     "build": "NODE_ENV=production ./node_modules/.bin/webpack --progress",
     "build:prod": "./node_modules/.bin/webpack -p",
     "watch": "./node_modules/.bin/webpack --watch",
-    "dev": "NODE_ENV=development webpack-dashboard ./node_modules/.bin/webpack-dev-server -d --progress --colors --hot --inline"
+    "dev": "NODE_ENV=development webpack-dashboard ./node_modules/.bin/webpack-dev-server -d --progress --colors --inline"
   },
   "dependencies": {
     "@types/lodash": "^4.14.123",
