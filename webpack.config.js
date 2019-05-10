@@ -8,8 +8,13 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const DashboardPlugin = require("webpack-dashboard/plugin");
 const PurgecssPlugin = require('purgecss-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const PreloadWebpackPlugin = require('preload-webpack-plugin');
+const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
+const HtmlCriticalWebpackPlugin = require("html-critical-webpack-plugin");
 
 const env = process.env.NODE_ENV;
+const isProduction = env === 'production';
 
 const glob = require('glob')
 const PATHS = {
@@ -18,19 +23,24 @@ const PATHS = {
 
 
 
-module.exports = {
+
+
+
+const config = {
   mode: env ,
   context: path.resolve(__dirname, 'src'),
   entry:
   {
     app: './js/index.ts',
     main: './js/main.ts',
-    another: './js/another-module.ts'
+    another: './js/another-module.ts',
+   maincss: './assets/scss/main.scss',
+   //appcss: './assets/scss/app.scss',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: env === 'development' ? './js/[name].bundle.[hash].js' : './js/[name].[hash].js',
-    chunkFilename: env === 'development' ? './js/[name].bundle.[hash].js' : './js/[name].[hash].js',
+    filename: env === 'development' ? './js/[name].bundle.js' : './js/[name].bundle.[hash].js',
+    chunkFilename: env === 'development' ? './js/[name].bundle.js' : './js/[name].bundle.[hash].js',
      pathinfo: false,
   },
 
@@ -43,7 +53,7 @@ module.exports = {
     splitChunks: {
       cacheGroups: {
         styles: {
-          name: 'styles',
+          name: 'vendors-css',
           test: /\.css$/,
           chunks: 'all',
           enforce: true,
@@ -52,7 +62,7 @@ module.exports = {
           maxInitialRequests: Infinity,
           minSize: 0,
           test: /[\\/]node_modules[\\/]/,
-          //  name: 'vendors',
+          name: 'vendors-js',
           chunks: 'all',
 
         }
@@ -66,17 +76,20 @@ module.exports = {
   ,
 
   devServer: {
+    watchOptions: {
+      poll: true
+  },
     contentBase: path.resolve(__dirname, 'src'),
-    hot: true,
+  //  hot: true,
     // inline: true,
     // host: '0.0.0.0',
     port: 1111,
+    watchContentBase: true,
     //stats: 'errors-only',
     overlay: true,
     open: true,
     compress: true
   },
-  devtool: 'inline-source-map',
 
   module: {
     // noParse: /jquery|lodash/,
@@ -122,7 +135,7 @@ module.exports = {
               // publicPath: '../assets/',
               /// outputPath: './assets/css/',
               // only enable hot in development
-              hmr: process.env.NODE_ENV === 'development',
+             // hmr: process.env.NODE_ENV === 'development',
               // if hmr does not work, this is a forceful method.
               reloadAll: true,
             }
@@ -174,18 +187,19 @@ module.exports = {
       {
         test: /\.(gif|png|jpe?g|svg)$/i,
         include: [path.resolve(__dirname, 'src', 'assets', 'media')],
+        exclude: [path.resolve(__dirname, 'src', 'assets', 'depotMedia')],
         use: [
           {
             loader: 'file-loader',
             options: {
-              name: env === 'development' ? '[name].[hash].[ext]' : 'assets/media/[name].[hash].[ext]',
+              name: env === 'development' ? 'assets/media/[name].[ext]' : 'assets/media/[name].[ext]',
             },
           },
           { loader: 'image-webpack-loader',
           options: {
             mozjpeg: {
               progressive: true,
-              quality: 65
+              quality: 70
             },
             // optipng.enabled: false will disable optipng
             optipng: {
@@ -200,7 +214,7 @@ module.exports = {
             },
             // the webp option will enable WEBP
             webp: {
-              quality: 75
+              quality: 30
             }
           }
         
@@ -228,28 +242,72 @@ module.exports = {
 
 
   plugins: [
-    // new webpack.optimize.UglifyJsPlugin(),
-    new PurgecssPlugin({
-      paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
-    }),
-    new DashboardPlugin(),
+    
+   // à activer seulement dans le mode prod
+   // new PurgecssPlugin({
+   //   paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
+   // }),
+
+   new webpack.HashedModuleIdsPlugin(),
+
+
+
+   
+   //new DashboardPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       // inject: false,
       //hash: true,
       template: 'index.html',
-      filename: 'index.html'
+      filename: 'index.html',
+      minify:{
+        collapseWhitespace: true, 
+        removeComments: true, 
+        removeRedundantAttributes: true, 
+        removeScriptTypeAttributes: true, 
+        removeStyleLinkTypeAttributes: true, 
+        useShortDoctype: true 
+
+      },
     }),
-    new webpack.HashedModuleIdsPlugin(),
-    //env === 'development' ? 'new webpack.HotModuleReplacementPlugin(),' : '',
-    new webpack.HotModuleReplacementPlugin(),
     new MiniCssExtractPlugin({
       // filename: "assets/css/[name].[hash].css",
-      filename: env === 'development' ? '[name].[hash].css' : './assets/css/[name].[hash].css',
-
+      filename: env === 'development' ? '[name].css' : './assets/css/[name].[hash].css',
+      chunkFilename: env === 'development' ? '[name].[id].css' : './assets/css/[name].[id].[hash].css',
     }),
-  ]
-  ,
+
+    // new HtmlCriticalWebpackPlugin({
+    //   base: path.resolve(__dirname, 'dist'),
+    //   src: 'index.html',
+    //   dest: 'index.html',
+    //   inline: true,
+    //   minify: true,
+    //   extract: true,
+    //   width: 1300,
+    //   height: 900,
+    //   penthouse: {
+    //     blockJSRequests: false,
+    //   }
+    // }),
+//     new FixStyleOnlyEntriesPlugin({ extensions:['maincss'] }), 
+//       new PreloadWebpackPlugin({
+// // fileWhitelist: [/maincss.css/,/\.\/js\/main.bundle.js/],
+//   rel: 'preload',
+//  include: 'allChunks',
+ 
+// // include: ['print','maincss']
+
+// } ),
+
+
+   
+    //env === 'development' ? 'new webpack.HotModuleReplacementPlugin(),' : '',
+    //new webpack.HotModuleReplacementPlugin(),
+    //new FixStyleOnlyEntriesPlugin(),
+    // new BundleAnalyzerPlugin({
+
+    // }),
+  ],
 
   resolve: {
     extensions: ['.ts', '.js']
@@ -258,10 +316,18 @@ module.exports = {
   //      extensions: ['.json','.ts', '.tsx', '.js', '.jsx']
   //   },
 
-
-
-
-
-
-
 };
+
+if (isProduction) {
+  config.plugins.push(  new PurgecssPlugin({ paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),}),
+   
+  );
+} else { // isDev
+  config.devtool = /*'source-map'*/  'inline-source-map';
+}
+
+
+
+
+
+module.exports = config;
